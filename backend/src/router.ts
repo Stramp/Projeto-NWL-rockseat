@@ -1,5 +1,5 @@
 import express from 'express';
-import ControllersPonto from './database/controls/controllersPonto';
+import ControllersPonto from './database/controls/ControllersPonto';
 
 const rotas = express.Router();
 const controlPonto = new ControllersPonto();
