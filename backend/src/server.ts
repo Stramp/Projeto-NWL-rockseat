@@ -1,22 +1,14 @@
 import express from 'express';
+import rotas from './router';
+import path from 'path';
 
 const app = express();
 const port = "3666";
 
-/**
- * req > recebe os dados
- * resp > devolve os dados
- * 
- */
+app.use(express.json());
+app.use(rotas);
 
-app.get('/users', (req, resp) => {
-    console.log('hello word');
-    resp.json({
-        nome: "rafa",
-        sobrenome: "stramp",
-        cidade: "sao paulo"
-    })
-})
+app.use('/uploads', express.static(path.resolve(__dirname, '..', 'temp', 'uploads')));
 
 app.listen(port);
 
