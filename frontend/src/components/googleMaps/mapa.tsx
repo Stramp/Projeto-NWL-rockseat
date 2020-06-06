@@ -3,7 +3,7 @@ import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 
 function MapContainer(props: any) {
     return (
-        <Map google={props.google} >
+        <Map google={props.google} zoom={15}>
 
             <Marker onClick={props.onMarkerClick}
             />

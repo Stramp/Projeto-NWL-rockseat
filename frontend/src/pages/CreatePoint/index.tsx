@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import api from '../../services/api';
 import axios from 'axios';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Map, TileLayer, Marker } from 'react-leaflet';
+import { LeafletMouseEvent } from 'leaflet';
 
 interface Item {
     item: String,
@@ -19,26 +20,32 @@ interface Ibge {
 
 }
 
+
+
 const CreatePoint = () => {
     const [itens, setItens] = useState([]);
-    const [ufs, setUfs] = useState([]);
+    const [ufs, setUfs] = useState<Array<Ibge>>([]);
     const [cities, setCities] = useState([]);
     const [city, setCity] = useState('');
     const [ufSelect, setUfSelect] = useState('');
+    const [endereco, setEndereco] = useState('');
+    const [markerPos, setMarkerPos] = useState<[number, number]>([0, 0]);
+    const [initialPos, setInitialPos] = useState<[number, number]>([0, 0]);
+
     useEffect(() => {
         console.log('eae')
         api.get('itens').then(resp => {
             setItens(resp.data.itens);
-        })
-        axios.get('http://servicodados.ibge.gov.br/api/v1/localidades/estados').then(resp => {
-            const uf = resp.data.map((item: Ibge) => (
-                item.sigla
-            ));
-            setUfs(uf);
         });
+        (async function () {
+            const ufs = await axios.get<Array<Ibge>>('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
+            setUfs(ufs.data);
+        })()
+
     }, []);
 
     useEffect(() => {
+        if (ufSelect === '') return;
         axios.get('http://servicodados.ibge.gov.br/api/v1/localidades/estados/' + ufSelect + '/municipios').then(resp => {
             const cities = resp.data.map((item: Ibge) => (
                 item.nome
@@ -47,18 +54,39 @@ const CreatePoint = () => {
         });
     }, [ufSelect]);
 
+    useEffect(() => {
+        if (city === '' && endereco === '' && ufSelect === '') return;
+        console.log('ta entrando2');
+        (async function () {
+            const markerEnd = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${endereco},${city}-${ufSelect}&key=20a9c85cb9494bfdac7a9234792698e8`);
+            const { lat, lng } = markerEnd.data.results[0].geometry
+            setMarkerPos([lat, lng]);
+            setInitialPos([lat, lng]);
+        })()
+    }, [city, endereco, ufSelect]);
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            setInitialPos([latitude, longitude]);
+        });
+    }, []);
+
     function handUf(e: ChangeEvent<HTMLSelectElement>) {
         setUfSelect(e.target.value);
     }
     function handCity(e: ChangeEvent<HTMLSelectElement>) {
         setCity(e.target.value);
     }
-    const state = {
-        lat: 51.505,
-        lng: -0.09,
-        zoom: 13,
+    function handEndereco(e: ChangeEvent<HTMLInputElement>) {
+        const end = String(e.target.value).replace(/ /g, '%20');
+        console.log(end);
+        setEndereco(end);
     }
-    const position: [number, number] = [state.lat, state.lng];
+    function handMap(e: LeafletMouseEvent) {
+        setMarkerPos([e.latlng.lat, e.latlng.lng]);
+    }
+
 
     return (
         <div id="page-create-point" >
@@ -107,21 +135,30 @@ const CreatePoint = () => {
                         <span>Selecione seu endereço no mapa</span>
                     </legend>
 
-                    <Map center={position} zoom={state.zoom}>
+                    <Map center={initialPos} zoom={15} onClick={handMap}>
                         <TileLayer
                             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                        <Marker position={[state.lat, state.lng]}>
+                        <Marker position={markerPos}>
                         </Marker>
                     </Map>
 
+                    <div className="field">
+                        <label htmlFor="endereco">Endereço</label>
+                        <input
+                            type="text"
+                            name="endereco"
+                            id="endereco"
+                            onChange={handEndereco} />
+
+                    </div>
                     <div className="field-group">
                         <div className="field">
-                            <label htmlFor="uf">Endereço</label>
+                            <label htmlFor="uf">Estado</label>
                             <select onChange={handUf} name="uf" id="uf">
                                 <option value="0">Selecione o Estado</option>
-                                {ufs.map((item, i) => (<option key={i} value={item}>{item}</option>))}
+                                {ufs.map((item, i) => (<option key={i} value={item.sigla}>{item.sigla}</option>))}
                             </select>
                         </div>
                         <div className="field">
@@ -132,6 +169,7 @@ const CreatePoint = () => {
                             </select>
                         </div>
                     </div>
+
 
                 </fieldset>
                 <fieldset>
