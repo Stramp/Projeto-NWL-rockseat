@@ -4,7 +4,8 @@ import knex from '../connection';
 export default class ControllersPonto {
 
     async create(req: Request, resp: Response) {
-        const { nome, img, email, whatsapp, rua, numero, cidade, uf, items } = req.body;
+        const { nome, img, email, whatsapp, rua, numero, cidade, uf, itens } = req.body;
+        console.log('no controler do cadastra', req.body)
         const trx = await knex.transaction();
 
         const idItem = await trx('pontos')
@@ -18,7 +19,7 @@ export default class ControllersPonto {
                 cidade,
                 uf
             });
-        const pontoItem = items.map((id: Number) => {
+        const pontoItem = itens.map((id: Number) => {
             return {
                 ponto_id: idItem[0],
                 item_id: id
@@ -48,6 +49,17 @@ export default class ControllersPonto {
 
         return resp.json({
             pontos
+        });
+    }
+
+    async allIndex(req: Request, resp: Response) {
+
+        const itens = await knex('pontos')
+            .select('*');
+
+
+        return resp.json({
+            itens
         });
     }
 

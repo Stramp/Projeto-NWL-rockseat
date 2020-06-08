@@ -1,12 +1,13 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import './styles.css';
 import logo from '../../assets/logo.svg';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import api from '../../services/api';
-import axios from 'axios';
+import apiControl from '../../services/controladorDeApis';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
+import CadastroConcluido from '../../components/modals/CadastroConcluido'
 
 interface Item {
     item: String,
@@ -23,7 +24,10 @@ interface Ibge {
 
 
 const CreatePoint = () => {
+    const [open, setOpen] = useState<boolean>(false);
+    const [load, setLoad] = useState<boolean>(true);
     const [itens, setItens] = useState([]);
+    const [itensSelect, setItensSelect] = useState<number[]>([]);
     const [ufs, setUfs] = useState<Array<Ibge>>([]);
     const [cities, setCities] = useState([]);
     const [city, setCity] = useState('');
@@ -31,46 +35,48 @@ const CreatePoint = () => {
     const [endereco, setEndereco] = useState('');
     const [markerPos, setMarkerPos] = useState<[number, number]>([0, 0]);
     const [initialPos, setInitialPos] = useState<[number, number]>([0, 0]);
+    const [formData, setFormData] = useState({
+        nome: '',
+        email: '',
+        whatsapp: ''
+    });
+
+    const hist = useHistory();
 
     useEffect(() => {
-        console.log('eae')
-        api.get('itens').then(resp => {
-            setItens(resp.data.itens);
-        });
         (async function () {
-            const ufs = await axios.get<Array<Ibge>>('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
-            setUfs(ufs.data);
-        })()
+            const items = await apiControl.indexItens();
+            setItens(items);
+
+            const ufs = await apiControl.ufs();
+            setUfs(ufs);
+        })();
+
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            setInitialPos([latitude, longitude]);
+        });
 
     }, []);
 
     useEffect(() => {
         if (ufSelect === '') return;
-        axios.get('http://servicodados.ibge.gov.br/api/v1/localidades/estados/' + ufSelect + '/municipios').then(resp => {
-            const cities = resp.data.map((item: Ibge) => (
-                item.nome
-            ));
+        (async function () {
+            const cities: any = await apiControl.municipios(ufSelect);
             setCities(cities);
-        });
+        })();
     }, [ufSelect]);
 
     useEffect(() => {
         if (city === '' && endereco === '' && ufSelect === '') return;
-        console.log('ta entrando2');
         (async function () {
-            const markerEnd = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${endereco},${city}-${ufSelect}&key=20a9c85cb9494bfdac7a9234792698e8`);
-            const { lat, lng } = markerEnd.data.results[0].geometry
+            const { lat, lng } = await apiControl.coords(ufSelect, endereco, city);
             setMarkerPos([lat, lng]);
             setInitialPos([lat, lng]);
         })()
     }, [city, endereco, ufSelect]);
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(pos => {
-            const { latitude, longitude } = pos.coords;
-            setInitialPos([latitude, longitude]);
-        });
-    }, []);
+
 
     function handUf(e: ChangeEvent<HTMLSelectElement>) {
         setUfSelect(e.target.value);
@@ -80,16 +86,75 @@ const CreatePoint = () => {
     }
     function handEndereco(e: ChangeEvent<HTMLInputElement>) {
         const end = String(e.target.value).replace(/ /g, '%20');
-        console.log(end);
         setEndereco(end);
     }
     function handMap(e: LeafletMouseEvent) {
         setMarkerPos([e.latlng.lat, e.latlng.lng]);
     }
+    function handForm(e: ChangeEvent<HTMLInputElement>) {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    }
+
+    function handSelectItem(id: number) {
+        const alreadySelect = itensSelect.findIndex(item => item === id);
+        if (alreadySelect >= 0) {
+            const filterItens = itensSelect.filter(item => item !== id);
+            setItensSelect(filterItens);
+        } else {
+            setItensSelect([...itensSelect, id]);
+        }
+
+    }
+
+
+
+
+
+    async function handSubimit(e: FormEvent) {
+        e.preventDefault();
+        const { nome, email, whatsapp } = formData;
+        const cidade = city;
+        const uf = ufSelect;
+        const [lat, lng] = markerPos;
+        const itens = itensSelect;
+        const rua = endereco;
+        const numero = '13';
+
+        const data = {
+            nome, email, whatsapp,
+            cidade,
+            uf,
+            lat, lng,
+            itens,
+            numero,
+            rua
+        }
+
+        setOpen(true);
+
+        api.post('ponto-de-coleta', data).then((result) => {
+            console.log('cadastrou', result);
+            setLoad(false);
+            const interval = setInterval(() => {
+                hist.push('/');
+                clearInterval(interval);
+            }, 3000);
+        }, (err) => {
+            console.warn('erro>', err)
+        })
+
+    }
+
+
+
 
 
     return (
         <div id="page-create-point" >
+            {open ? <CadastroConcluido load={load} /> : <></>}
             <header>
                 <img src={logo} alt="Ecoleta" />
                 <Link to="/">
@@ -98,7 +163,7 @@ const CreatePoint = () => {
                 </Link>
             </header>
 
-            <form action="">
+            <form onSubmit={handSubimit}>
                 <h1>Cadastro do <br />Ponto de Coleta</h1>
                 <fieldset>
                     <legend>
@@ -106,11 +171,12 @@ const CreatePoint = () => {
                     </legend>
 
                     <div className="field">
-                        <label htmlFor="name">Nome da Entidade</label>
+                        <label htmlFor="nome">Nome da Entidade</label>
                         <input
                             type="text"
-                            name="name"
-                            id="name" />
+                            name="nome"
+                            id="nome"
+                            onChange={handForm} />
                     </div>
                     <div className="field-group">
                         <div className="field">
@@ -118,14 +184,16 @@ const CreatePoint = () => {
                             <input
                                 type="email"
                                 name="email"
-                                id="email" />
+                                id="email"
+                                onChange={handForm} />
                         </div>
                         <div className="field">
                             <label htmlFor="whatsapp">Whatsapp</label>
                             <input
                                 type="text"
                                 name="whatsapp"
-                                id="whatsapp" />
+                                id="whatsapp"
+                                onChange={handForm} />
                         </div>
                     </div>
                 </fieldset>
@@ -182,7 +250,10 @@ const CreatePoint = () => {
                         {
                             itens.map((item: Item) => (
 
-                                < li key={item.id} >
+                                < li
+                                    key={item.id}
+                                    onClick={() => handSelectItem(item.id)}
+                                    className={itensSelect.includes(item.id) ? 'selected' : ''}>
                                     <img src={"http://localhost:3666/uploads/" + item.img} alt="" />
                                     <span>{item.item}</span>
                                 </li>
@@ -192,9 +263,10 @@ const CreatePoint = () => {
 
 
 
-                        <button type="submit">Cadastrar Ponto de Coleta</button>
+
 
                     </ul>
+                    <button type="submit">Cadastrar Ponto de Coleta</button>
                 </fieldset>
             </form>
         </div >

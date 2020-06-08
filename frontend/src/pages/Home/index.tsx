@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './styles.css';
 import logo from '../../assets/logo.svg'
-import { FiLogIn } from 'react-icons/fi';
+import { FiLogIn, FiArrowRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import BuscarPonto from '../../components/modals/BuscarPonto'
 
 
 const Home = () => {
+
+    const [open, setOpen] = useState<boolean>(false);
+
+    function handModal() {
+        setOpen(true);
+    }
+
     return (
         <div id="page-home">
+            {open ? <BuscarPonto /> : <></>}
             <div className="content">
                 <header>
                     <img src={logo} alt="Ecoleta" />
@@ -16,11 +25,14 @@ const Home = () => {
                 <main>
                     <h1>Seu marketplace de coleta de resíduos.</h1>
                     <p>Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente</p>
-                    <Link to="/cadastra-ponto">
+                    <button onClick={handModal}>
                         <span>
                             <FiLogIn />
                         </span>
-                        <strong>Cadastre um ponto de coleta</strong>
+                        <strong>Encontrar um ponto de coleta</strong>
+                    </button>
+                    <Link to="/cadastra-ponto" id="cadastrar">
+                        <FiArrowRight />Cadastre ponto de coleta
                     </Link>
                 </main>
             </div>

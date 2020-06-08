@@ -40,12 +40,14 @@
   line-height: 38px;
 }
 
-#page-home .content main a {
+#page-home .content main a,
+#page-home .content main button {
   width          : 100%;
   max-width      : 360px;
   height         : 72px;
   background     : var(--primary-color);
   border-radius  : 8px;
+  border         : 0;
   text-decoration: none;
 
   display    : flex;
@@ -55,7 +57,8 @@
   margin-top: 40px;
 }
 
-#page-home .content main a span {
+#page-home .content main a span,
+#page-home .content main button span {
   display   : block;
   background: rgba(0, 0, 0, 0.08);
   width     : 72px;
@@ -67,23 +70,39 @@
   transition     : background-color 0.2s;
 }
 
-#page-home .content main a span svg {
+#page-home .content main a span svg,
+#page-home .content main button span svg {
   color : #FFF;
   width : 20px;
   height: 20px;
 }
 
-#page-home .content main a strong {
+#page-home .content main a strong,
+#page-home .content main button strong {
   flex      : 1;
   text-align: center;
   color     : #FFF;
 }
 
-#page-home .content main a:hover {
+#page-home .content main a:hover,
+#page-home .content main button:hover {
   background: #2FB86E;
 }
 
+#page-home .content main #cadastrar {
+  color          : var(--title-color);
+  font-weight    : bold;
+  text-decoration: none;
+  background     : none;
+  display        : flex;
+  align-items    : center;
+  margin-top     : 0;
+}
 
+#page-home .content main #cadastrar svg {
+  margin-right: 16px;
+  color       : var(--primary-color);
+}
 
 
 
@@ -108,6 +127,14 @@
   #page-home {
 
     background: url('../../assets/home-background.svg') no-repeat 500px bottom;
+  }
+
+}
+
+@media(max-height:600px) {
+  #page-home {
+
+    background-position-y: 50px;
   }
 
 }
