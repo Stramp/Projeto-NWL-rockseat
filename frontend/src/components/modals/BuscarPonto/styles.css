@@ -64,7 +64,6 @@
     color      : var(--text-color);
 }
 
-.modal-group form .field-group {}
 
 .modal-group form .field {
     flex          : 1;
