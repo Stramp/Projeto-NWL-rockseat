@@ -123,15 +123,20 @@ const CreatePoint = () => {
         const rua = endereco;
         const numero = '13';
 
-        const data = {
-            nome, email, whatsapp,
-            cidade,
-            uf,
-            lat, lng,
-            itens,
-            numero,
-            rua
-        }
+
+        const data = new FormData();
+
+        data.append('nome', nome);
+        data.append('email', email);
+        data.append('whatsapp', whatsapp);
+        data.append('cidade', cidade);
+        data.append('uf', uf);
+        data.append('lat', String(lat));
+        data.append('lng', String(lng));
+        data.append('itens', itens.join(','));
+        data.append('numero', numero);
+        data.append('rua', rua);
+
 
         setOpen(true);
 
