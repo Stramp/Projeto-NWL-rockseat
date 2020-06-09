@@ -3,6 +3,7 @@ import './styles.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FiCheckCircle } from 'react-icons/fi';
 import apiControl, { Ibge } from '../../../services/controladorDeApis'
+import { useHistory } from 'react-router-dom'
 
 const Formulario = (props: any) => {
     console.count('formulario')
@@ -30,6 +31,7 @@ const Formulario = (props: any) => {
             <button type="submit">Buscar</button>
         </fieldset>
 
+
     );
 }
 
@@ -42,7 +44,7 @@ export default function TransitionsModal(props: any) {
             </div>
         );
     }
-
+    const hist = useHistory();
 
 
     const [load, setLoad] = React.useState(true);
@@ -77,9 +79,17 @@ export default function TransitionsModal(props: any) {
         console.log(et.target.value);
         setCidade(et.target.value);
     }
-    function handSubmit(et: FormEvent) {
+    async function handSubmit(et: FormEvent) {
         et.preventDefault();
         setOpen(true);
+        const buscador = await apiControl.pontosFiltrados(cidade, uf);
+        console.log('>>>>', buscador);
+        console.table(buscador);
+        setLoad(false);
+        const interval = setInterval(() => {
+            hist.push('/lista-pontos');
+            clearInterval(interval);
+        }, 3000);
     }
 
 

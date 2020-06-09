@@ -254,7 +254,7 @@ const CreatePoint = () => {
                                     key={item.id}
                                     onClick={() => handSelectItem(item.id)}
                                     className={itensSelect.includes(item.id) ? 'selected' : ''}>
-                                    <img src={"http://localhost:3666/uploads/" + item.img} alt="" />
+                                    <img src={String(item.img)} alt="" />
                                     <span>{item.item}</span>
                                 </li>
                             ))

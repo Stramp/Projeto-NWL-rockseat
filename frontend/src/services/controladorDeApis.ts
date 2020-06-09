@@ -15,10 +15,21 @@ export interface Ibge {
 
 }
 
+export interface PontosBd {
+    nome: string,
+    img: string,
+    email: string,
+    whatsapp: string,
+    numero: string,
+    cidade: string,
+    uf: string,
+    rua: string
+}
+
 const indexItens = async () => {
 
     const listaObj = await api.get('itens');
-    const lista = listaObj.data.itens;
+    const lista = listaObj.data;
     return lista;
 
 }
@@ -44,10 +55,16 @@ const coords = async (ufSelect: string, endereco: string, city: string) => {
     return coords;
 }
 
+const pontosFiltrados = async (cidade: string, uf: string) => {
+    const pontosEncontrados = await api.get(`ponto-de-coleta?cidade=${cidade}&uf=${uf}`);
+    return pontosEncontrados.data.pontos;
+}
+
 export default {
     indexItens,
     ufs,
     municipios,
     coords,
+    pontosFiltrados
 
 }

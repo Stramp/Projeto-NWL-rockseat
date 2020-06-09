@@ -1,0 +1,170 @@
+body::after {
+    content   : "";
+    position  : fixed;
+    background: #fff;
+    top       : 300px;
+    right     : 0;
+    left      : 0;
+    bottom    : 0;
+    z-index   : -1;
+
+}
+
+main {
+    margin-top: 50px;
+}
+
+
+
+main h4 {
+    font-weight  : normal;
+    margin-bottom: 35px;
+}
+
+header {
+    margin-top: 20px;
+}
+
+main .cards {
+    display              : grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap                  : 20px;
+
+}
+
+main .card {
+    background   : #F0F0F5;
+    padding      : 5px;
+    border-radius: 8px;
+    max-width    : 235px;
+}
+
+main .card img {
+    width        : 100%;
+    height       : 150px;
+    object-fit   : cover;
+    border-radius: 8px 8px 0 0;
+    background   : #6C6C80;
+
+}
+
+main .card h2,
+h3,
+p {
+    margin-top   : 15px;
+    overflow-wrap: break-word;
+}
+
+main .card h3 {
+    color: var(--primary-color);
+}
+
+#page-results {
+    width    : 100%;
+    max-width: 1000px;
+
+    margin: 0 auto;
+}
+
+#page-results header {
+
+    display        : flex;
+    justify-content: space-between;
+    align-items    : center;
+}
+
+#page-results header a {
+    color          : var(--title-color);
+    font-weight    : bold;
+    text-decoration: none;
+
+    display    : flex;
+    align-items: center;
+}
+
+#page-results header a svg {
+    margin-right: 10px;
+    color       : var(--primary-color);
+}
+
+#page-results form {
+    padding      : 20px;
+    background   : #FFF;
+    max-width    : 730px;
+    min-width    : 40%;
+    border-radius: 8px;
+
+    display       : flex;
+    flex-direction: column;
+}
+
+#page-results form h1 {
+    font-size: 36px;
+}
+
+#page-results form fieldset {
+    min-inline-size: auto;
+    border         : 0;
+}
+
+
+
+
+#page-results form .field-group {
+    flex   : 1;
+    display: flex;
+}
+
+
+
+#page-results form select {
+    -webkit-appearance: none;
+    -moz-appearance   : none;
+    appearance        : none;
+    flex              : 1;
+    background        : #F0F0F5;
+    border-radius     : 8px 0 0 8px;
+    border            : 0.5;
+    padding           : 16px 24px;
+    font-size         : 16px;
+    color             : #6C6C80;
+}
+
+#page-results form select+select {
+    -webkit-appearance: none;
+    -moz-appearance   : none;
+    appearance        : none;
+    flex              : 1;
+    background        : #F0F0F5;
+    border-radius     : 0 0 0 0;
+    border            : 0.5;
+    padding           : 16px 24px;
+    font-size         : 16px;
+    color             : #6C6C80;
+}
+
+
+
+
+
+#page-results form :disabled {
+    cursor: not-allowed;
+}
+
+#page-results form button {
+    width        : auto;
+    padding      : 20px 10px 20px 10px;
+    background   : var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    color        : #FFF;
+    font-weight  : bold;
+    font-size    : 16px;
+    border       : 0;
+    align-self   : flex-end;
+    transition   : background-color 0.2s;
+    cursor       : pointer;
+}
+
+#page-results form button:hover {
+    background: #2FB86E;
+}

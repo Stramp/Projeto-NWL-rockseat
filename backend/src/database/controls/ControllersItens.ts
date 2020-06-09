@@ -37,10 +37,16 @@ export default class ControllersItens {
         const itens = await knex('items')
             .select('*')
 
-
-        return resp.json({
-            itens
+        const itensSerialized = itens.map(item => {
+            return {
+                ...item,
+                img: `http://localhost:3666/uploads/${item.img}`
+            }
         });
+
+        return resp.json(
+            itensSerialized
+        );
     }
 
     /*  async show(req: Request, resp: Response) {

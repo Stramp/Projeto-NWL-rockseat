@@ -4,14 +4,14 @@ import knex from '../connection';
 export default class ControllersPonto {
 
     async create(req: Request, resp: Response) {
-        const { nome, img, email, whatsapp, rua, numero, cidade, uf, itens } = req.body;
-        console.log('no controler do cadastra', req.body)
+        const { nome, email, whatsapp, rua, numero, cidade, uf, itens } = req.body;
+        const img = req.file.filename;
         const trx = await knex.transaction();
 
         const idItem = await trx('pontos')
             .insert({
                 nome,
-                img: 'imgdefault',
+                img,
                 email,
                 whatsapp,
                 rua,
@@ -19,36 +19,42 @@ export default class ControllersPonto {
                 cidade,
                 uf
             });
-        const pontoItem = itens.map((id: Number) => {
-            return {
-                ponto_id: idItem[0],
-                item_id: id
+        const pontoItem = itens
+            .split(',')
+            .map((item: String) => Number(item.trim()))
+            .map((id: Number) => {
+                return {
+                    ponto_id: idItem[0],
+                    item_id: id
 
-            }
-        });
+                }
+            });
         await trx('pontos_items').insert(pontoItem);
         await trx.commit();
         return resp.json({
-            nome, email
+            nome, email, img
         });
     }
 
     async index(req: Request, resp: Response) {
-        const { cidade, uf, items } = req.query;
-        const parseItems = String(items).split(',').map(item => {
-            return Number(item.trim());
-        });
+        const { cidade, uf } = req.query;
         const pontos = await knex('pontos')
-            .join('pontos_items', 'pontos.id', '=', 'pontos_items.ponto_id')
-            .whereIn('pontos_items.item_id', parseItems)
             .where('cidade', String(cidade))
             .where('uf', String(uf))
             .distinct()
             .select('pontos.*')
 
+        const serializedPontos = pontos.map(ponto => {
+            return {
+                ...ponto,
+                img: `http://localhost:3666/uploads/${ponto.img}`
+            }
+        });
+
 
         return resp.json({
-            pontos
+            serializedPontos,
+            query: { cidade, uf }
         });
     }
 
