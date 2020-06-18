@@ -50,13 +50,11 @@ export default class ControllersPonto {
 
         const { cidade, uf } = req.query;
         const pontos = await knex('pontos')
-            //.join('pontos_items', 'pontos_items.ponto_id', '=', 'pontos.id')
             .where('cidade', String(cidade))
             .where('uf', String(uf))
             .distinct()
             .select('pontos.*')
 
-        console.log("items11111111sss ::: ", pontos)
 
         const serializedPontos = pontos.map(ponto => {
 
@@ -67,7 +65,6 @@ export default class ControllersPonto {
 
             }
         });
-        console.log("itemssss :serializedPontos:: ", serializedPontos)
         let itemsPerPoint: any[] = [];
         for (let index = 0; index < serializedPontos.length; index++) {
             const element = serializedPontos[index];
@@ -76,33 +73,23 @@ export default class ControllersPonto {
                 .join('pontos_items', 'items.id', '=', 'pontos_items.item_id')
                 .where('pontos_items.ponto_id', element.id));
         }
-        let ipp: any[];
 
         const pontosEntrega = serializedPontos.map((item, i) => {
-            console.log('**********************', i, '****************************************************')
-            console.log(">>", itemsPerPoint[i])
-            console.log('**********************', i, '****************************************************')
 
-            let ippName = itemsPerPoint.map((rec, r) => {
-                console.log(i, ">>>>", r, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-                console.log(i, ">iii>", itemsPerPoint[i][r])
-                console.log(i, ">>>>>>>", r, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-                return itemsPerPoint[i][r]
+            const ITEM = itemsPerPoint[i].map((rec: any, r: number) => {
+                return {
+                    nome: rec.item,
+                    urlImg: rec.img
+                }
             })
 
 
 
-            console.log("#####################################")
-            console.log("###", ippName)
-            console.log("#####################################")
-
-
-            const ITEMS = ippName
-
-            return ({
+            return {
                 ...item,
+                items: ITEM
 
-            })
+            }
         })
 
 
