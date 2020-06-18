@@ -50,29 +50,67 @@ export default class ControllersPonto {
 
         const { cidade, uf } = req.query;
         const pontos = await knex('pontos')
+            //.join('pontos_items', 'pontos_items.ponto_id', '=', 'pontos.id')
             .where('cidade', String(cidade))
             .where('uf', String(uf))
             .distinct()
             .select('pontos.*')
 
+        console.log("items11111111sss ::: ", pontos)
 
+        const serializedPontos = pontos.map(ponto => {
 
-        const serializedPontos = pontos.map((ponto) => {
             return {
                 ...ponto,
-                img: `http://localhost:3666/uploads/${ponto.img}`,
+                img: `http://localhost:3666/uploads/${ponto.img}`
 
-            };
+
+            }
         });
+        console.log("itemssss :serializedPontos:: ", serializedPontos)
+        let itemsPerPoint: any[] = [];
+        for (let index = 0; index < serializedPontos.length; index++) {
+            const element = serializedPontos[index];
+            console.log(element.id, "eleID")
+            itemsPerPoint.push(await knex('items')
+                .join('pontos_items', 'items.id', '=', 'pontos_items.item_id')
+                .where('pontos_items.ponto_id', element.id));
+        }
+        let ipp: any[];
 
-        const ponto_items = await knex('items').select('*')
+        const pontosEntrega = serializedPontos.map((item, i) => {
+            console.log('**********************', i, '****************************************************')
+            console.log(">>", itemsPerPoint[i])
+            console.log('**********************', i, '****************************************************')
+
+            let ippName = itemsPerPoint.map((rec, r) => {
+                console.log(i, ">>>>", r, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+                console.log(i, ">iii>", itemsPerPoint[i][r])
+                console.log(i, ">>>>>>>", r, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+                return itemsPerPoint[i][r]
+            })
 
 
 
-        console.log(ponto_items, "itemssss :serializedPontos:: ", serializedPontos)
+            console.log("#####################################")
+            console.log("###", ippName)
+            console.log("#####################################")
+
+
+            const ITEMS = ippName
+
+            return ({
+                ...item,
+
+            })
+        })
+
+
+
+
 
         return resp.json({
-            pontos: serializedPontos,
+            pontos: pontosEntrega,
             query: { cidade, uf }
 
         });
