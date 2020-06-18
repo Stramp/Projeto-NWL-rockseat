@@ -23,7 +23,8 @@ export interface PontosBd {
     numero: string,
     cidade: string,
     uf: string,
-    rua: string
+    rua: string,
+    id: number
 }
 
 const indexItens = async () => {
@@ -56,7 +57,9 @@ const coords = async (ufSelect: string, endereco: string, city: string) => {
 }
 
 const pontosFiltrados = async (cidade: string, uf: string) => {
+    console.log("???????", cidade, uf)
     const pontosEncontrados = await api.get(`ponto-de-coleta?cidade=${cidade}&uf=${uf}`);
+    console.log("???>>>>????", pontosEncontrados)
     return pontosEncontrados.data.pontos;
 }
 

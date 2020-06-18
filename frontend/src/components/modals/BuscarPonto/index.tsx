@@ -83,7 +83,7 @@ export default function TransitionsModal(props: any) {
         et.preventDefault();
         setOpen(true);
         const buscador = await apiControl.pontosFiltrados(cidade, uf);
-        console.log('>>>>', buscador);
+        console.log('>22>>>', buscador);
         console.table(buscador);
         setLoad(false);
         const interval = setInterval(() => {

@@ -1,6 +1,16 @@
 import { Request, Response } from 'express';
 import knex from '../connection';
-
+export interface PontosBd {
+    nome: string,
+    img: string,
+    email: string,
+    whatsapp: string,
+    numero: string,
+    cidade: string,
+    uf: string,
+    rua: string,
+    id: number
+}
 export default class ControllersPonto {
 
     async create(req: Request, resp: Response) {
@@ -37,6 +47,7 @@ export default class ControllersPonto {
     }
 
     async index(req: Request, resp: Response) {
+
         const { cidade, uf } = req.query;
         const pontos = await knex('pontos')
             .where('cidade', String(cidade))
@@ -44,17 +55,26 @@ export default class ControllersPonto {
             .distinct()
             .select('pontos.*')
 
-        const serializedPontos = pontos.map(ponto => {
+
+
+        const serializedPontos = pontos.map((ponto) => {
             return {
                 ...ponto,
-                img: `http://localhost:3666/uploads/${ponto.img}`
-            }
+                img: `http://localhost:3666/uploads/${ponto.img}`,
+
+            };
         });
 
+        const ponto_items = await knex('items').select('*')
+
+
+
+        console.log(ponto_items, "itemssss :serializedPontos:: ", serializedPontos)
 
         return resp.json({
-            serializedPontos,
+            pontos: serializedPontos,
             query: { cidade, uf }
+
         });
     }
 
@@ -70,6 +90,7 @@ export default class ControllersPonto {
     }
 
     async show(req: Request, resp: Response) {
+        console.log("oi ? no show ? ", req.params)
         const { id } = req.params;
 
         const pontoColeta = await knex('pontos')
@@ -80,6 +101,9 @@ export default class ControllersPonto {
         const items = await knex('items')
             .join('pontos_items', 'items.id', '=', 'pontos_items.item_id')
             .where('pontos_items.ponto_id', id);
+
+        console.log("ponto de3 controle?????")
+        console.table(items)
 
         return resp.status(200).json({
             pontoColeta, items
