@@ -1,26 +1,25 @@
-import React, { useEffect, ChangeEvent, FormEvent, Component } from 'react';
+import React, { useEffect, ChangeEvent, FormEvent, useState } from 'react';
 import './styles.css';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { FiCheckCircle, FiArrowLeft } from 'react-icons/fi';
-import apiControl, { Ibge, PontosBd } from '../../services/controladorDeApis';
+import { usePesquisaContext } from '../../contexts/contextPesquisaEndereco';
+
+import { FiArrowLeft } from 'react-icons/fi';
+import apiControl, { IIbge, IPontosBd } from '../../services/controladorDeApis';
 import { Link } from 'react-router-dom'
 import logo from '../../assets/logo.svg';
 
 export default function () {
-
-    const [load, setLoad] = React.useState(true);
-    const [open, setOpen] = React.useState(false);
-    const [cidade, setCidade] = React.useState('');
-    const [cidades, setCidades] = React.useState([]);
-    const [uf, setUf] = React.useState('');
-    const [ufs, setUfs] = React.useState<Array<Ibge>>([]);
-    const [pontos, setPontos] = React.useState([]);
+    const { cidade, setCidade, cidades, setCidades, uf, setUf, ufs, setUfs, pontos, setPontos } = usePesquisaContext();
+    const [load, setLoad] = useState(true);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
+
+
         (async () => {
             const ufs = await apiControl.ufs();
-            console.log("uai", ufs)
+            console.log("uai-resultados", pontos)
             setUfs(ufs);
+
         })();
     }, [])
 
@@ -68,7 +67,7 @@ export default function () {
 
                             <select onChange={handUf} name="uf" id="uf">
                                 <option value="0">UF</option>
-                                {ufs.map((item: Ibge, i: number) => (<option key={i} value={item.sigla}>{item.sigla}</option>))}
+                                {ufs.map((item: IIbge, i: number) => (<option key={i} value={item.sigla}>{item.sigla}</option>))}
                             </select>
 
 
@@ -97,7 +96,7 @@ export default function () {
                 </h4>
 
                 <div className="cards">
-                    {pontos.map((ponto: PontosBd, i) => {
+                    {pontos.map((ponto: IPontosBd, i: number) => {
                         return (
                             <div key={i} className="card">
 

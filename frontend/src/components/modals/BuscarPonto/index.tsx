@@ -1,13 +1,13 @@
-import React, { useEffect, ChangeEvent, FormEvent, Component } from 'react';
+import React, { useEffect, ChangeEvent, FormEvent, useState } from 'react';
 import './styles.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FiCheckCircle } from 'react-icons/fi';
-import apiControl, { Ibge } from '../../../services/controladorDeApis'
-import { useHistory } from 'react-router-dom'
+import apiControl, { IIbge } from '../../../services/controladorDeApis';
+import { useHistory } from 'react-router-dom';
+import { usePesquisaContext } from '../../../contexts/contextPesquisaEndereco';
+
 
 const Formulario = (props: any) => {
-    console.count('formulario')
-    console.log('formulario', props)
     return (
 
         <fieldset>
@@ -18,7 +18,7 @@ const Formulario = (props: any) => {
 
                 <select onChange={props.handUf} name="uf" id="uf">
                     <option value="0">UF</option>
-                    {props.ufs.map((item: Ibge, i: number) => (<option key={i} value={item.sigla}>{item.sigla}</option>))}
+                    {props.ufs.map((item: IIbge, i: number) => (<option key={i} value={item.sigla}>{item.sigla}</option>))}
                 </select>
 
 
@@ -46,13 +46,11 @@ export default function TransitionsModal(props: any) {
     }
     const hist = useHistory();
 
+    const { cidade, setCidade, cidades, setCidades, uf, setUf, ufs, setUfs, pontos, setPontos } = usePesquisaContext();
 
-    const [load, setLoad] = React.useState(true);
-    const [open, setOpen] = React.useState(false);
-    const [cidade, setCidade] = React.useState('');
-    const [cidades, setCidades] = React.useState([]);
-    const [uf, setUf] = React.useState('');
-    const [ufs, setUfs] = React.useState<Array<Ibge>>([]);
+    const [load, setLoad] = useState(true);
+    const [open, setOpen] = useState(false);
+
 
     useEffect(() => {
         (async () => {
@@ -76,16 +74,16 @@ export default function TransitionsModal(props: any) {
         setUf(et.target.value);
     }
     function handCity(et: ChangeEvent<HTMLSelectElement>) {
-        console.log(et.target.value);
         setCidade(et.target.value);
     }
     async function handSubmit(et: FormEvent) {
         et.preventDefault();
         setOpen(true);
         const buscador = await apiControl.pontosFiltrados(cidade, uf);
-        console.log('>22>>>', buscador);
-        console.table(buscador);
         setLoad(false);
+
+        setLoad(false);
+        setPontos(buscador);
         const interval = setInterval(() => {
             hist.push('/lista-pontos');
             clearInterval(interval);

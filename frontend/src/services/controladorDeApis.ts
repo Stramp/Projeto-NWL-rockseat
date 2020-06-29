@@ -1,21 +1,18 @@
 import api from './api';
 import axios from 'axios';
 
-const teste = () => {
-    return 5 + 5;
-};
 
 interface Item {
     itens: [],
 }
 
-export interface Ibge {
+export interface IIbge {
     sigla: string,
     nome: string
 
 }
 
-export interface PontosBd {
+export interface IPontosBd {
     nome: string,
     img: string,
     email: string,
@@ -36,12 +33,12 @@ const indexItens = async () => {
 }
 
 const ufs = async () => {
-    const ufs = await axios.get<Array<Ibge>>('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
+    const ufs = await axios.get<Array<IIbge>>('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
     return ufs.data;
 }
 
 const municipios = async (ufSelect: string) => {
-    const municipiosPromi = axios.get<Array<Ibge>>('http://servicodados.ibge.gov.br/api/v1/localidades/estados/' + ufSelect + '/municipios')
+    const municipiosPromi = axios.get<Array<IIbge>>('http://servicodados.ibge.gov.br/api/v1/localidades/estados/' + ufSelect + '/municipios')
     const municipios = (await municipiosPromi).data.map(item => (
         item.nome
     ));

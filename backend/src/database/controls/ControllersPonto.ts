@@ -66,6 +66,7 @@ export default class ControllersPonto {
             }
         });
         let itemsPerPoint: any[] = [];
+
         for (let index = 0; index < serializedPontos.length; index++) {
             const element = serializedPontos[index];
             console.log(element.id, "eleID")
