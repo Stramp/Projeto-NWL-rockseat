@@ -21,7 +21,11 @@ export interface IPontosBd {
     cidade: string,
     uf: string,
     rua: string,
-    id: number
+    id: number,
+    items: {
+        nome: string,
+        urlImg: string
+    }[]
 }
 
 const indexItens = async () => {

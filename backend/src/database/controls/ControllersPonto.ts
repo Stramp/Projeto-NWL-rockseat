@@ -116,7 +116,6 @@ export default class ControllersPonto {
     }
 
     async show(req: Request, resp: Response) {
-        console.log("oi ? no show ? ", req.params)
         const { id } = req.params;
 
         const pontoColeta = await knex('pontos')
@@ -128,8 +127,6 @@ export default class ControllersPonto {
             .join('pontos_items', 'items.id', '=', 'pontos_items.item_id')
             .where('pontos_items.ponto_id', id);
 
-        console.log("ponto de3 controle?????")
-        console.table(items)
 
         return resp.status(200).json({
             pontoColeta, items

@@ -10,14 +10,12 @@ import logo from '../../assets/logo.svg';
 export default function () {
     const { cidade, setCidade, cidades, setCidades, uf, setUf, ufs, setUfs, pontos, setPontos } = usePesquisaContext();
     const [load, setLoad] = useState(true);
-    const [open, setOpen] = useState(false);
 
     useEffect(() => {
-
-
+        console.log("pontos em resultados>", pontos.length > 0);
+        setLoad(pontos.length > 0);
         (async () => {
             const ufs = await apiControl.ufs();
-            console.log("uai-resultados", pontos)
             setUfs(ufs);
 
         })();
@@ -42,15 +40,15 @@ export default function () {
     }
     async function handSubmit(et: FormEvent) {
         et.preventDefault();
-        setOpen(true);
+
+        setLoad(true);
         const buscador = await apiControl.pontosFiltrados(cidade, uf);
-        console.table(buscador);
+        console.log(buscador);
         setLoad(false);
+
         setPontos(buscador);
-        const interval = setInterval(() => {
-            //hist.push('/lista-pontos');
-            clearInterval(interval);
-        }, 3000);
+        console.log("uai2-resultados", buscador[0].items)
+
     }
 
 
@@ -89,10 +87,13 @@ export default function () {
             </header>
 
             <main>
-                <h4>
-                    <strong>
-                        {pontos.length}
-                    </strong> resultados encontrados
+                <h4>{load ? "Carregando" :
+                    <>
+                        <strong>
+                            {pontos.length}
+                        </strong> resultados encontrados
+                    </>
+                }
                 </h4>
 
                 <div className="cards">
@@ -100,13 +101,13 @@ export default function () {
                         return (
                             <div key={i} className="card">
 
-                                <img src="https://images.unsplash.com/photo-1567393528677-d6adae7d4a0a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80" alt="nomedolocal" />
+                                <img src={ponto.img} alt="nomedolocal" />
                                 <h2>{ponto.nome}</h2>
 
-                                <h3>oq eles catam</h3>
+                                <h3>{ponto.items.map(item => item.nome + ", ")}</h3>
                                 <p>
                                     {ponto.cidade},  {ponto.uf} <br />
-                                   sdasd {ponto.rua}, {ponto.numero}
+                                    {ponto.rua.replace(/%20/g, ' ')}, {ponto.numero}
                                 </p>
                             </div>
                         )

@@ -46,7 +46,7 @@ export default function TransitionsModal(props: any) {
     }
     const hist = useHistory();
 
-    const { cidade, setCidade, cidades, setCidades, uf, setUf, ufs, setUfs, pontos, setPontos } = usePesquisaContext();
+    const { cidade, setCidade, cidades, setCidades, uf, setUf, ufs, setUfs, setPontos } = usePesquisaContext();
 
     const [load, setLoad] = useState(true);
     const [open, setOpen] = useState(false);
@@ -55,7 +55,6 @@ export default function TransitionsModal(props: any) {
     useEffect(() => {
         (async () => {
             const ufs = await apiControl.ufs();
-            console.log("uai", ufs)
             setUfs(ufs);
         })();
     }, [])
