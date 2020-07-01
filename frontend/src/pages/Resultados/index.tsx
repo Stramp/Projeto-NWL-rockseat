@@ -12,8 +12,7 @@ export default function () {
     const [load, setLoad] = useState(false);
 
     useEffect(() => {
-        const isResults = pontos.length > 0;
-        setLoad(isResults);
+
         (async () => {
             const ufs = await apiControl.ufs();
             setUfs(ufs);
@@ -52,7 +51,7 @@ export default function () {
 
 
 
-
+    console.log(load, "<<load?")
 
     return (
         <div id="page-results" >
@@ -103,10 +102,10 @@ export default function () {
                                 <img src={ponto.img} alt="nomedolocal" />
                                 <h2>{ponto.nome}</h2>
 
-                                <h3>{ponto.items.map(item => item.nome + ", ")}</h3>
+                                <h3>{ponto.items.map(item => item.nome + " | ")}</h3>
                                 <p>
                                     {ponto.cidade},  {ponto.uf} <br />
-                                    {ponto.rua.replace(/%20/g, ' ')}, {ponto.numero}
+                                    {ponto.rua.replace(/%20/g, ' ')}
                                 </p>
                             </div>
                         )

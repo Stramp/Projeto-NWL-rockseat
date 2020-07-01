@@ -15,9 +15,8 @@ export default class ControllersPonto {
 
     async create(req: Request, resp: Response) {
         const { nome, email, whatsapp, rua, numero, cidade, uf, itens } = req.body;
-        const img = req.file.filename;
+        const img = req.file ? req.file.filename : "defaultImg.png";
         const trx = await knex.transaction();
-
         const idItem = await trx('pontos')
             .insert({
                 nome,
