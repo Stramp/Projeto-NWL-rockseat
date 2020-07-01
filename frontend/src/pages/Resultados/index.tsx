@@ -9,11 +9,11 @@ import logo from '../../assets/logo.svg';
 
 export default function () {
     const { cidade, setCidade, cidades, setCidades, uf, setUf, ufs, setUfs, pontos, setPontos } = usePesquisaContext();
-    const [load, setLoad] = useState(true);
+    const [load, setLoad] = useState(false);
 
     useEffect(() => {
-        console.log("pontos em resultados>", pontos.length > 0);
-        setLoad(pontos.length > 0);
+        const isResults = pontos.length > 0;
+        setLoad(isResults);
         (async () => {
             const ufs = await apiControl.ufs();
             setUfs(ufs);
@@ -43,11 +43,10 @@ export default function () {
 
         setLoad(true);
         const buscador = await apiControl.pontosFiltrados(cidade, uf);
-        console.log(buscador);
+        console.log(">>>>", buscador, "<<<<<<");
         setLoad(false);
 
         setPontos(buscador);
-        console.log("uai2-resultados", buscador[0].items)
 
     }
 

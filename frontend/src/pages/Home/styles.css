@@ -87,6 +87,7 @@
 #page-home .content main a:hover,
 #page-home .content main button:hover {
   background: #2FB86E;
+  cursor    : pointer;
 }
 
 #page-home .content main #cadastrar {

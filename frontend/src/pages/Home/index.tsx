@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './styles.css';
 import logo from '../../assets/logo.svg'
-import { FiLogIn, FiArrowRight } from 'react-icons/fi';
+import { FiLogIn, FiSearch } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import BuscarPonto from '../../components/modals/BuscarPonto'
 
@@ -27,12 +27,12 @@ const Home = () => {
                     <p>Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente</p>
                     <button onClick={handModal}>
                         <span>
-                            <FiLogIn />
+                            <FiSearch />
                         </span>
                         <strong>Encontrar um ponto de coleta</strong>
                     </button>
                     <Link to="/cadastra-ponto" id="cadastrar">
-                        <FiArrowRight />Cadastre ponto de coleta
+                        <FiLogIn />Cadastre ponto de coleta
                     </Link>
                 </main>
             </div>

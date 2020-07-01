@@ -7,7 +7,8 @@ import api from '../../services/api';
 import apiControl from '../../services/controladorDeApis';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
-import CadastroConcluido from '../../components/modals/CadastroConcluido'
+import CadastroConcluido from '../../components/modals/CadastroConcluido';
+import DropZone from '../../components/DropZone';
 
 interface Item {
     item: String,
@@ -35,6 +36,7 @@ const CreatePoint = () => {
     const [endereco, setEndereco] = useState('');
     const [markerPos, setMarkerPos] = useState<[number, number]>([0, 0]);
     const [initialPos, setInitialPos] = useState<[number, number]>([0, 0]);
+    const [imgLoaded, setImgLoaded] = useState<File>()
     const [formData, setFormData] = useState({
         nome: '',
         email: '',
@@ -117,6 +119,7 @@ const CreatePoint = () => {
         e.preventDefault();
         const { nome, email, whatsapp } = formData;
         const cidade = city;
+        const img = imgLoaded;
         const uf = ufSelect;
         const [lat, lng] = markerPos;
         const itens = itensSelect;
@@ -128,6 +131,7 @@ const CreatePoint = () => {
 
         data.append('nome', nome);
         data.append('email', email);
+        if (img) data.append('img', img);
         data.append('whatsapp', whatsapp);
         data.append('cidade', cidade);
         data.append('uf', uf);
@@ -170,6 +174,7 @@ const CreatePoint = () => {
 
             <form onSubmit={handSubimit}>
                 <h1>Cadastro do <br />Ponto de Coleta</h1>
+                <DropZone onChangeImg={setImgLoaded} />
                 <fieldset>
                     <legend>
                         <h2>Dados</h2>

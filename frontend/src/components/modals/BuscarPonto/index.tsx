@@ -86,7 +86,7 @@ export default function TransitionsModal(props: any) {
         const interval = setInterval(() => {
             hist.push('/lista-pontos');
             clearInterval(interval);
-        }, 3000);
+        }, 2000);
     }
 
 

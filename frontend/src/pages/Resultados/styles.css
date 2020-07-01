@@ -37,6 +37,7 @@ main .card {
     padding      : 5px;
     border-radius: 8px;
     max-width    : 235px;
+    border       : solid 0.5px #6C6C80f6;
 }
 
 main .card img {
